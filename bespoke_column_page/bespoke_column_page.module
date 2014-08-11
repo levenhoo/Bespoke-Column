@@ -1,0 +1,83 @@
+<?php
+ 
+define("BESPOKE_COLUMN_PAGE", "column");
+define("BESPOKE_COLUMN_PAGE_CONTENT_TYPE", "bespoke_column");
+define("BESPOKE_COLUMN_PAGE_TAXONOMY_MACHINE_NAME", "bespoke_column_tax");
+define("BESPOKE_COLUMN_PAGE_CONTENT_TYPE_FIELD_MACHINE_NAME", "bespoke_column_field");
+
+/**
+ * Implements hook_init(). 
+ */
+ function bespoke_column_page_init(){
+    //幾個頁面需要轉到主站位置  
+     $domain=domain_get_domain();
+     if( isset($domain['domain_id']) && $domain['domain_id'] == '16' ){ 
+        if( $_GET['q'] == 'merchant/create' ||
+            $_GET['q'] == 'user/login' ||
+            $_GET['q'] == 'general/create' || 
+            ( strpos($_GET['q'],'merchant')!== false && 
+              strpos($_GET['q'],'edit')!== false ) ){
+          domain_set_domain(4);
+          $domain=domain_get_domain();
+          $path = domain_get_uri($domain);
+          drupal_goto($domain['path'].$_GET['q']);
+        }       
+     }
+ } 
+
+/**
+ * Implements hook_menu(). 
+ */
+function bespoke_column_page_menu() { 
+  $items[BESPOKE_COLUMN_PAGE] = array(
+    'page callback' => '_bespoke_column_page',   
+    'access callback' => TRUE,
+    //'title' => 'Bestpoke column Page',
+    'file' => 'bespoke_column_page_page.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_block_info().
+ *
+ * This hook declares what blocks are provided by the module.
+ */
+function bespoke_column_page_block_info() { 
+  $blocks['column_date'] = array( 
+   'info' => t('Bespoke column:find date'),        
+  );
+  $blocks['top_10_news'] = array( 
+    'info' => t('Bespoke column:top 10 news'),
+  ); 
+  $blocks['column_vocabularies'] = array(      
+    'info' => t('Bespoke column:column taxonomy'),    
+  ); 
+  return $blocks;
+}
+/**
+ * Implements hook_block_view().
+ *
+ * This hook generates the contents of the blocks themselves.
+ */
+function bespoke_column_page_block_view($delta = '') {
+  module_load_include('inc', 'bespoke_column_page', 'bespoke_column_page_page'); 
+  switch ($delta) {     
+    case 'column_date':
+      $block['subject'] = t("文章存檔");
+      $block['content'] = _bespoke_column_page_date_feedback();
+      break;
+    case 'top_10_news':
+      $block['subject'] = t("最新文章");
+      $block['content'] = _bespoke_column_page_top10news();
+      break; 
+    case 'column_vocabularies':
+      $block['subject'] = t("文章分類");
+      $block['content'] = _bespoke_column_page_get_vocabularies();
+      break; 
+  }
+  return $block;
+}
+ 
+ 
+  

@@ -1,0 +1,13 @@
+name = Bespoke Column Page
+description = Bespoke Column Page
+; package = Bespoke
+core = 7.x
+dependencies[] = block
+
+
+; Information added by Drupal.org packaging script on 2014-04-04
+version = "7.x"
+core = "7.x"
+project = "Bespoke"
+datestamp = "1396652050"
+
